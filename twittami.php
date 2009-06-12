@@ -446,14 +446,15 @@ function twittami_query ( $method, $args = array(), $debug = false, $type = "wp_
 			if ( isset( $args[1][1] ) )
 				$http_url .= "&arg_1={$args[1][1]}";
 
-			$httpObj = new WP_Http();
-			$return = $httpObj->request( $http_url );
-			if ( is_array( $return ) )
+			$return = wp_remote_request( $http_url, array( 'timeout' => 2 ) );
+
+			if ( is_array( $return ) ) {
 				$return = $return['body'];
-
-			$twittami->cache->post_{$args[1][0]} = $return;
-
-			wp_cache_set( 'post_' . $args[1][0], $twittami->cache->post_{$args[1][0]}, 'twittami' );
+				$twittami->cache->post_{$args[1][0]} = $return;
+				wp_cache_set( 'post_' . $args[1][0], $twittami->cache->post_{$args[1][0]}, 'twittami' );
+			} else {
+				return '?';
+			}
 
 		}
 		return $twittami->cache->post_{$args[1][0]};
