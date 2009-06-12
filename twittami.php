@@ -452,7 +452,6 @@ function twittami_query ( $method, $args = array(), $debug = false, $type = "wp_
 		wp_cache_set( 'post_' . $args[1][0], $twittami->cache->post_{$args[1][0]}, 'twittami' );
 
 	}
-var_dump( $twittami->cache->post_{$args[1][0]}  );
 		return $twittami->cache->post_{$args[1][0]};
 
 	}
