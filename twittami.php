@@ -445,7 +445,7 @@ function twittami_query ( $method, $args = array(), $debug = false, $type = "wp_
 			$http_url .= "&arg_1={$args[1][1]}";
 
 		$return = WP_Http::request( $http_url );
-		$return = (int)$return['body'];
+		$return = $return['body'];
 
 		$twittami->cache->post_{$args[1][0]} = $return;
 
