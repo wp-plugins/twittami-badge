@@ -1,4 +1,4 @@
-=== Twittami! ===
+=== Plugin Name ===
 Contributors: nicolagreco
 Donate link: http://twittami.com/
 Tags: twitter, italian, twittami, tools, ajax
