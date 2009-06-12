@@ -128,7 +128,7 @@ function twittami_header_css () {
 
 	?>
 
-	<link href="<?php echo WP_PLUGIN_URL ?>/twittami_button/twittami.css" media="screen" rel="stylesheet" type="text/css"/>
+	<link href="<?php echo WP_PLUGIN_URL ?>/twittami-badge/twittami.css" media="screen" rel="stylesheet" type="text/css"/>
 
 	<?php
 
@@ -141,7 +141,7 @@ function twittami_footer_js () {
 	?>
 
 <!-- Twittami.com | Script JS - Start -->
-<script src="<?php echo WP_PLUGIN_URL ?>/twittami_button/facebox/facebox.js" type="text/javascript"></script>
+<script src="<?php echo WP_PLUGIN_URL ?>/twittami-badge/facebox/facebox.js" type="text/javascript"></script>
 <script type="text/javascript">
 	jQuery(document).ready(function($) {
 		$('a[rel*=twittami]').twittamibox();
