@@ -111,10 +111,12 @@ function twittami_buttons_init () {
 
 	wp_enqueue_script('jquery');
 
-	if ( 'manuale' != $twittami->options->button_position and 'basso' != $twittami->options->button_position )
-		add_filter('the_content', 'twittami_button' );
-	elseif ( 'basso' == $twittami->options->button_position )
-		add_filter('the_content', 'twittami_button_bottom' );
+	if ( !is_feed() ) {
+		if ( 'manuale' != $twittami->options->button_position and 'basso' != $twittami->options->button_position )
+			add_filter('the_content', 'twittami_button' );
+		elseif ( 'basso' == $twittami->options->button_position )
+			add_filter('the_content', 'twittami_button_bottom' );
+	}
 
 	add_action( 'admin_menu', 'twittami_settings_init' );
 	add_action( 'wp_head', 'twittami_footer_js', 12 );
@@ -406,7 +408,7 @@ function twittami_link_generate ( $data, $direct = false ) {
 
 }
 
-function twittami_query ( $method, $args = array(), $debug = false, $type = "wp_http" ) {
+function twittami_query ( $method, $args = array(), $debug = false, $type = "iframe" ) {
 
 	global $twittami;
 
@@ -431,30 +433,34 @@ function twittami_query ( $method, $args = array(), $debug = false, $type = "wp_
 
 		return $client->getResponse();
 
+	} elseif ( 'wp_http' == $type ) {
+
+		$twittami->cache->post_{$args[1][0]} = wp_cache_get( 'post_' . $args[1][0], $twittami->cache->post_{$args[1][0]}, 'twittami' );
+		if ( false === $twittami->cache->post_{$args[1][0]} ) {
+
+			$http_url = $twittami->site . "/twit.php?t=count";
+			$http_url .= "&method={$args[0]}";
+
+			if ( isset( $args[1][0] ) )
+				$http_url .= "&arg_0={$args[1][0]}";
+			if ( isset( $args[1][1] ) )
+				$http_url .= "&arg_1={$args[1][1]}";
+
+			$httpObj = new WP_Http();
+			$return = $httpObj->request( $http_url );
+			if ( is_array( $return ) )
+				$return = $return['body'];
+
+			$twittami->cache->post_{$args[1][0]} = $return;
+
+			wp_cache_set( 'post_' . $args[1][0], $twittami->cache->post_{$args[1][0]}, 'twittami' );
+
+		}
+		return $twittami->cache->post_{$args[1][0]};
+
 	} else {
 
-	$twittami->cache->post_{$args[1][0]} = wp_cache_get( 'post_' . $args[1][0], $twittami->cache->post_{$args[1][0]}, 'twittami' );
-	if ( false === $twittami->cache->post_{$args[1][0]} ) {
-
-		$http_url = $twittami->site . "/twit.php?t=count";
-		$http_url .= "&method={$args[0]}";
-
-		if ( isset( $args[1][0] ) )
-			$http_url .= "&arg_0={$args[1][0]}";
-		if ( isset( $args[1][1] ) )
-			$http_url .= "&arg_1={$args[1][1]}";
-
-		$httpObj = new WP_Http();
-		$return = $httpObj->request( $http_url );
-		if ( is_array( $return ) )
-			$return = $return['body'];
-
-		$twittami->cache->post_{$args[1][0]} = $return;
-
-		wp_cache_set( 'post_' . $args[1][0], $twittami->cache->post_{$args[1][0]}, 'twittami' );
-
-	}
-		return $twittami->cache->post_{$args[1][0]};
+//		$template = '<iframe src="http://twittami.com/twit.php?t=count&method=id&arg_0="'
 
 	}
 

@@ -1,23 +1,23 @@
 /* Twittami Box */
 
 #twittamibox .b {
-  background:url(http://twittami.com/e/facebox/b.png);
+  background:url(facebox/b.png);
 }
 
 #twittamibox .tl {
-  background:url(http://twittami.com/e/facebox/tl.png);
+  background:url(facebox/tl.png);
 }
 
 #twittamibox .tr {
-  background:url(http://twittami.com/e/facebox/tr.png);
+  background:url(facebox/tr.png);
 }
 
 #twittamibox .bl {
-  background:url(http://twittami.com/e/facebox/bl.png);
+  background:url(facebox/bl.png);
 }
 
 #twittamibox .br {
-  background:url(http://twittami.com/e/facebox/br.png);
+  background:url(facebox/br.png);
 }
 
 #twittamibox {
@@ -119,7 +119,7 @@ div#twittami_badge_normal a, div#twittami_badge_compact a {
 }
 
 div#twittami_badge_normal {
-	background: transparent url(http://twittami.com/e/images/badge_normal.png) no-repeat scroll 0 0 !important;
+	background: transparent url(images/badge_normal.png) no-repeat scroll 0 0 !important;
 	height: 53px !important;
 	width: 46px !important;
 	margin: 10px !important;
@@ -158,7 +158,7 @@ div#twittami_badge_normal {
 
 /* Twittami Button - Compact */
 div#twittami_badge_compact {
-	background: transparent url(http://twittami.com/e/images/badge_compact.png) no-repeat scroll 0 0 !important;
+	background: transparent url(images/badge_compact.png) no-repeat scroll 0 0 !important;
 	height: 18px !important;
 	margin: 5px 10px 5px !important;
 	width: 84px !important;
@@ -198,7 +198,7 @@ div#twittami_badge_compact {
 		div#twittami_badge_compact div#twittami_button a {
 		}
 div#twittami_box {
-	background:transparent url(http://twittami.com/e/images/setipiace.png) no-repeat scroll 66px 0 !important;
+	background:transparent url(images/setipiace.png) no-repeat scroll 66px 0 !important;
 	display:block !important;
 	height:75px !important;
 	overflow:hidden !important;
