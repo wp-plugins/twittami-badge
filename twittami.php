@@ -272,10 +272,10 @@ function twittami_button ( $content = false, $options = array() ) {
 
 	$link = twittami_link_generate( $data );
 
-//	if ( !function_exists( 'twittami_hook_init' ) )
-//		$vote = twittami_query( 'twittami.getCount', array( 'id', array( (int)$data['post_id'], get_bloginfo('url') ) ) );
-//	else
-//		$vote = get_comments_number( $data['post_id'] );
+	if ( !function_exists( 'twittami_hook_init' ) )
+		$vote = twittami_query( 'twittami.getCount', array( 'id', array( (int)$data['post_id'], get_bloginfo('url') ) ) );
+	else
+		$vote = get_comments_number( $data['post_id'] );
 
 	if ( $vote === false )
 		$vote = '?';
@@ -452,7 +452,7 @@ function twittami_query ( $method, $args = array(), $debug = false, $type = "wp_
 		wp_cache_set( 'post_' . $args[1][0], $twittami->cache->post_{$args[1][0]}, 'twittami' );
 
 	}
-
+var_dump( $twittami->cache->post_{$args[1][0]}  );
 		return $twittami->cache->post_{$args[1][0]};
 
 	}
