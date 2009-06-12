@@ -444,7 +444,7 @@ function twittami_query ( $method, $args = array(), $debug = false, $type = "wp_
 		if ( isset( $args[1][1] ) )
 			$http_url .= "&arg_1={$args[1][1]}";
 
-		$httpObj = new WP_Http;
+		$httpObj = new WP_Http();
 		$return = $httpObj->request( $http_url );
 		$return = $return['body'];
 
