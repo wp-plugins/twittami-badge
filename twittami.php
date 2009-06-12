@@ -408,7 +408,7 @@ function twittami_link_generate ( $data, $direct = false ) {
 
 }
 
-function twittami_query ( $method, $args = array(), $debug = false, $type = "iframe" ) {
+function twittami_query ( $method, $args = array(), $debug = false, $type = "wp_http" ) {
 
 	global $twittami;
 
@@ -457,10 +457,6 @@ function twittami_query ( $method, $args = array(), $debug = false, $type = "ifr
 
 		}
 		return $twittami->cache->post_{$args[1][0]};
-
-	} else {
-
-//		$template = '<iframe src="http://twittami.com/twit.php?t=count&method=id&arg_0="'
 
 	}
 
