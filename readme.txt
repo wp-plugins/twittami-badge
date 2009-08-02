@@ -3,8 +3,8 @@ Contributors: nicolagreco
 Donate link: http://twittami.com/
 Tags: twitter, italian, twittami, tools, ajax
 Requires at least: 2.7
-Tested up to: 2.7
-Stable tag: 0.3
+Tested up to: 2.8.2
+Stable tag: 0.4
 
 Aggiunge il badge di Twittami.com sul tuo blog
 
