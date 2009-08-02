@@ -105,7 +105,7 @@
 }
 
 /* Twittami Button - Normal */
-div#twittami_badge_normal, div#twittami_badge_compact {
+div.twittami_badge_normal, div.twittami_badge_compact {
 	display: inline !important;
 	text-decoration: none !important;
 	text-transform: none !important;
@@ -113,12 +113,12 @@ div#twittami_badge_normal, div#twittami_badge_compact {
 	line-height: 17px !important;
 }
 
-div#twittami_badge_normal a, div#twittami_badge_compact a {
+div.twittami_badge_normal a, div.twittami_badge_compact a {
 	font-weight: normal !important;
 	background: transparent !important;
 }
 
-div#twittami_badge_normal {
+div.twittami_badge_normal {
 	background: transparent url(images/badge_normal.png) no-repeat scroll 0 0 !important;
 	height: 53px !important;
 	width: 46px !important;
@@ -126,60 +126,66 @@ div#twittami_badge_normal {
 	margin-top: 0 !important;
 	float: right;
 }
-	div#twittami_badge_normal.destra {
+	.twittami_badge_normal .loader {
+		margin:8px 0px 0px 14px;
+	}
+	div.twittami_badge_normal.destra {
 		float: right !important;
 		margin-right: 0 !important;
 	}
-	div#twittami_badge_normal.sinistra {
+	div.twittami_badge_normal.sinistra {
 		float: left !important;
 		margin-left: 0 !important;
 	}
-	div#twittami_badge_normal.basso {
+	div.twittami_badge_normal.basso {
 		float: left !important;
 	}
-	div#twittami_badge_normal a {
+	div.twittami_badge_normal a {
 		text-decoration: none !important;
 		color: #007292 !important;
 	}
-	div#twittami_badge_normal div#twittami_count {
+	div.twittami_badge_normal div.twittami_count {
 		font-size: 20px !important;
 		margin-top: 6px !important;
 		text-align: center !important;
 	}
-		div#twittami_badge_normal div#twittami_count a {
+		div.twittami_badge_normal div.twittami_count a {
 		}
-	div#twittami_badge_normal div#twittami_button {
+	div.twittami_badge_normal div.twittami_button {
 		font-size:10px !important;
 		margin-top:6px !important;
 		text-align:center !important;
 	}
-		div#twittami_badge_normal div#twittami_button a {
+		div.twittami_badge_normal div.twittami_button a {
 		}
 
 /* Twittami Button - Compact */
-div#twittami_badge_compact {
+div.twittami_badge_compact {
 	background: transparent url(images/badge_compact.png) no-repeat scroll 0 0 !important;
 	height: 18px !important;
 	margin: 5px 10px 5px !important;
 	width: 84px !important;
 }
-	div#twittami_badge_compact.destra {
+	.twittami_badge_compact .loader {
+		margin:1px 0px 0px 10px;
+	}
+	div.twittami_badge_compact.destra {
 		float: right !important;
 		margin-right: 0 !important;
 	}
-	div#twittami_badge_compact.sinistra {
+	div.twittami_badge_compact.sinistra {
 		float: left !important;
 		margin-left: 0 !important;
 	}
-	div#twittami_badge_compact.basso {
+	div.twittami_badge_compact.basso {
 		float: left !important;
 	}
-	div#twittami_badge_compact a {
+	div.twittami_badge_compact a {
 		text-decoration: none !important;
 		color: #007292 !important;
 		background: none !important;
 	}
-	div#twittami_badge_compact div#twittami_count {
+	div.twittami_badge_compact div.twittami_count {
 		display:inline !important;
 		font-size:12px !important;
 		margin-top:1px !important;
@@ -187,15 +193,15 @@ div#twittami_badge_compact {
 		text-align:center !important;
 		width:38px !important;
 	}
-		div#twittami_badge_compact div#twittami_count a {
+		div.twittami_badge_compact div.twittami_count a {
 		}
-	div#twittami_badge_compact div#twittami_button {
+	div.twittami_badge_compact div.twittami_button {
 		font-size:10px !important;
 		margin-left:39px;
 		margin-top:1px !important;
 		text-align:center !important;
 	}
-		div#twittami_badge_compact div#twittami_button a {
+		div.twittami_badge_compact div.twittami_button a {
 		}
 div#twittami_box {
 	background:transparent url(images/setipiace.png) no-repeat scroll 66px 0 !important;
@@ -203,6 +209,6 @@ div#twittami_box {
 	height:75px !important;
 	overflow:hidden !important;
 }
-	div#twittami_box div#twittami_badge_normal {
+	div#twittami_box div.twittami_badge_normal {
 		margin: 10px !important;
 	}

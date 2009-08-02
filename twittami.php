@@ -5,7 +5,7 @@ Author: Nicola Greco
 Author URI: http://nicolagreco.com/
 Plugin URI: http://twittami.com/badge
 Description: Aggiunge gli strumenti Twittami.com
-Version: 0.3
+Version: 0.4
 */
 
 /*
@@ -32,7 +32,7 @@ The complete license is in this folder, in the file called license.txt
 /* Actions */
 function twittami_button_get () {
 
-	global $twittami;
+	global $twittami, $post;
 
 	if ( isset( $_GET['n'] ) && $_GET['n'] ) {
 
@@ -42,7 +42,7 @@ function twittami_button_get () {
 		$postObj = get_post( $post_id );
 
 		if ( !$postObj )
-			wp_die("Ops! ci deve essere stato un errore con il post!");
+			wp_die( "Ops! ci deve essere stato un errore con il post!" );
 
 		$data['title'] = $postObj->post_title;
 		$data['at'] = $twittami->settings->at;
@@ -53,20 +53,20 @@ function twittami_button_get () {
 
 		$url = twittami_link_generate( $data, true );
 
-		?>
-
-			<iframe src="<?php echo $url ?>" width="500px" height="146px" border="no"></iframe>
-
-		<?php
+		?><iframe src="<?php echo $url ?>" width="500px" height="146px" border="no"></iframe><?php
 
 		die();
 	}
-
+	if ( isset( $_GET['vote_id'] ) && $_GET['vote_id'] ) {
+		$post_id = (int)$_GET['vote_id'];
+		$button = twittami_button_code( false, array( 'post_id' => $post_id ) );
+		echo $button;
+		die();
+	}
 }
+
 add_action( 'init', 'twittami_buttons_init' );
 add_action( 'init', 'twittami_button_get' );
-
-/* Filters */
 
 function twittami_buttons_init () {
 
@@ -119,22 +119,18 @@ function twittami_buttons_init () {
 	}
 
 	add_action( 'admin_menu', 'twittami_settings_init' );
-	add_action( 'wp_head', 'twittami_footer_js', 12 );
+	add_action( 'wp_footer', 'twittami_footer_js', 12 );
 	add_action( 'wp_head', 'twittami_header_css', 11 );
 
 }
 
 function twittami_header_css () {
 
-	global $twittami;
-
-	?>
+	global $twittami; ?>
 
 	<link href="<?php echo WP_PLUGIN_URL ?>/twittami-badge/twittami.css" media="screen" rel="stylesheet" type="text/css"/>
 
-	<?php
-
-}
+<?php }
 
 function twittami_footer_js () {
 
@@ -145,26 +141,57 @@ function twittami_footer_js () {
 <!-- Twittami.com | Script JS - Start -->
 <script src="<?php echo WP_PLUGIN_URL ?>/twittami-badge/facebox/facebox.js" type="text/javascript"></script>
 <script type="text/javascript">
+	<!--
 	jQuery(document).ready(function($) {
 		$('a[rel*=twittami]').twittamibox();
 		<?php do_action( 'twittami_jquery' ) ?>
 	});
+	-->
+</script>
+<script type="text/javascript">
+	<!--
+	jQuery(document).ready(function($) {
+		$(".twittami_badge").each(function() {
+			var $this = $(this);
+			var uid = $this.attr('id').substring(4);
+
+			$this.load("/?vote_id=" + uid);
+
+			$this.ajaxStop(function(r,s) {  
+				$(".twittami_badge .loader").fadeOut("fast");
+			});
+		});
+	});
+	-->
 </script>
 <!-- Twittami.com | Script JS - End -->
-
 	<?php
 
 }
 
 function twittami_settings_init (){
+
+	if ( !is_site_admin() )
+		return false;
+
+	add_menu_page(
+		'Twittami',
+		'Twittami',
+		2, 
+		'twittami', 
+		'twittami_settings',
+		WP_PLUGIN_URL . '/twittami-badge/images/twittami_bullet.png'
+	);
+
 	add_submenu_page(
-		'options-general.php',
-		'Twittami Settings',
-		'Twittami Settings',
+		'twittami',
+		'Statistiche',
+		'Statistiche',
 		1,
 		__FILE__,
-		'twittami_settings'
+		'twittami_settings_stats'
 	);
+
 }
 
 function twittami_settings() {
@@ -264,11 +291,28 @@ function twittami_settings() {
 
 }
 
+function twittami_settings_stats () { ?>
+
+	<h3>Statistiche</h3>
+	<p>Questa feature sarà aggiunta nella prossima versione</p>
+
+<?php }
+
 function twittami_button ( $content = false, $options = array() ) {
 
 	global $twittami, $post;
 
-	$data['post_id'] = $post->ID;
+	$button = '<div id="box-' . $post->ID . '" class="twittami_badge twittami_badge_' . $twittami->options->button_type . ' ' . $twittami->options->button_position . '">';
+	$button .= '<img src="' . WP_PLUGIN_URL . '/twittami-badge/images/ajax-loader.gif' . '" class="loader"/>';
+	$button .= '</div>';
+
+	$content = $button . $content ;
+	return $content;
+}
+
+function twittami_button_code ( $content = false, $data = array(), $options = array() ) {
+
+	global $twittami;
 
 	$data = array_merge( $data, $options );
 
@@ -282,18 +326,14 @@ function twittami_button ( $content = false, $options = array() ) {
 	if ( $vote === false )
 		$vote = '?';
 
-	$button = '<div id="twittami_badge_' . $twittami->options->button_type . '" class="' . $twittami->options->button_position . ' post-' . $post->ID . '">
-	<div id="twittami_count">
-		<a href="' . $link . '" title="' . __( 'Pubblica la notizia su twitter e fai girare la voce', 'twittami' ) . '" rel="twittamibox">' . $vote . '</a>
-	</div>
-	<div id="twittami_button">
-		<a href="' . $link . '" title="' . __( 'Pubblica la notizia su twitter e fai girare la voce', 'twittami' ) . '" rel="twittamibox">twittami</a>
-	</div>
-</div>';
-
+	$button .= '<div class="twittami_count">';
+	$button .= '<a href="' . $link . '" title="' . __( 'Pubblica la notizia su twitter e fai girare la voce', 'twittami' ) . '" rel="twittamibox">' . $vote . '</a>';
+	$button .=  '</div><!-- end .twittami_count -->';
+	$button .= '<div class="twittami_button">';
+	$button .= '<a href="' . $link . '" title="' . __( 'Pubblica la notizia su twitter e fai girare la voce', 'twittami' ) . '" rel="twittamibox">twittami</a>';
+	$button .= '</div><!-- end .twittami_button -->';
 
 	$content = $button . $content ;
-
 	return $content;
 }
 
@@ -305,14 +345,11 @@ function twittami_button_bottom ( $content ) {
 
 	$html .= '<div id="twittami_box">';
 	$html .= $button;
-	$html .= '</div><!-- #twittami_box -->';
-
+	$html .= '</div><!-- end #twittami_box -->';
 
 	return $content . $html;
 
-
 }
-
 
 function twittami_button_iframe ( $content ) {
 
@@ -335,7 +372,6 @@ function twittami_button_iframe ( $content ) {
 	return $content . $html;
 
 }
-
 
 function twittami_link_generate ( $data, $direct = false ) {
 
@@ -418,7 +454,6 @@ function twittami_query ( $method, $args = array(), $debug = false, $type = "wp_
 	if ( 'xmlrpc' == $type ) {
 
 		$xmlrpc_url = $twittami->site . '/xmlrpc.php';
-
 		$client = new IXR_Client( $xmlrpc_url );
 		$client->debug = $debug;
 		$client->timeout = 3;
