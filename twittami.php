@@ -29,7 +29,6 @@ The complete license is in this folder, in the file called license.txt
 
 */
 
-/* Actions */
 function twittami_button_get () {
 
 	global $twittami, $post;
@@ -88,20 +87,29 @@ function twittami_buttons_init () {
 	else
 		add_option( 'twittami_settings', $default );
 
-	if ( '1' == $twittami->settings->button_type )
-		$twittami->options->button_type = 'normal';
-	elseif ( '2' == $twittami->settings->button_type )
-		$twittami->options->button_type = 'compact';
+	switch ( $twittami->settings->button_type ) {
+		case '1':
+			$twittami->options->button_type = 'normal';
+			break;
+		case '2':
+			$twittami->options->button_type = 'compact';
+			break;
+	}
 
-	if ( '1' == $twittami->settings->button_position )
-		$twittami->options->button_position = 'destra';
-	elseif ( '2' == $twittami->settings->button_position )
-		$twittami->options->button_position = 'sinistra';
-	elseif ( '3' == $twittami->settings->button_position )
-		$twittami->options->button_position = 'manuale';
-	elseif ( '4' == $twittami->settings->button_position )
-		$twittami->options->button_position = 'basso';
-
+	switch ( $twittami->settings->button_position ) {
+		case '1':
+			$twittami->options->button_position = 'destra';
+			break;
+		case '2':
+			$twittami->options->button_position = 'sinistra';
+			break;
+		case '3':
+			$twittami->options->button_position = 'manuale';
+			break;
+		case '4':
+			$twittami->options->button_position = 'basso';
+			break;
+	}
 	$twittami->options->at = $twittami->settings->at;
 
 	if ( 'ajax' == $twittami->settings->request )
