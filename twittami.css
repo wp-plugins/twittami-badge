@@ -106,7 +106,6 @@
 
 /* Twittami Button - Normal */
 div.twittami_badge_normal, div.twittami_badge_compact {
-	display: inline !important;
 	text-decoration: none !important;
 	text-transform: none !important;
 	font-family: "Lucida Grande", Helvetica !important;
@@ -119,6 +118,7 @@ div.twittami_badge_normal a, div.twittami_badge_compact a {
 }
 
 div.twittami_badge_normal {
+	display: inline !important;
 	background: transparent url(images/badge_normal.png) no-repeat scroll 0 0 !important;
 	height: 53px !important;
 	width: 46px !important;
