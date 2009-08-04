@@ -29,6 +29,9 @@ The complete license is in this folder, in the file called license.txt
 
 */
 
+add_action( 'init', 'twittami_buttons_init' );
+add_action( 'init', 'twittami_button_get' );
+
 function twittami_button_get () {
 
 	global $twittami, $post;
@@ -64,9 +67,6 @@ function twittami_button_get () {
 	}
 }
 
-add_action( 'init', 'twittami_buttons_init' );
-add_action( 'init', 'twittami_button_get' );
-
 function twittami_buttons_init () {
 
 	global $twittami;
@@ -77,7 +77,9 @@ function twittami_buttons_init () {
 	$default = array(
 		'button_position' => '1',
 		'at' => 'retwittami',
-		'request' => 'ajax'
+		'request' => 'ajax',
+		'suggestion'=> 'Se ti &egrave; piaciuto, retwittami!',
+		'striscia_size' => '2'
 	);
 
 	$get_twittami = get_option( 'twittami_settings' );
@@ -101,7 +103,7 @@ function twittami_buttons_init () {
 			$twittami->options->button_type = 'compact';
 		break;
 		case '5':
-			$twittami->options->button_type = 'long';
+			$twittami->options->button_type = 'normal';
 		break;
 	}
 
@@ -119,7 +121,7 @@ function twittami_buttons_init () {
 			$twittami->options->button_align = 'sinistra';
 			break;
 		case '5':
-			$twittami->options->button_align = 'destra';
+			$twittami->options->button_align = 'sinistra';
 			break;
 		case '6':
 			$twittami->options->button_align = 'manuale';
@@ -147,7 +149,17 @@ function twittami_buttons_init () {
 			break;
 	}
 
+	switch ( $twittami->settings->striscia_size ) {
+		case '1':
+			$twittami->options->striscia_size = ' tiny';
+			break;
+		case '2':
+			$twittami->options->striscia_size = '';
+			break;
+	}
+
 	$twittami->options->at = $twittami->settings->at;
+	$twittami->options->suggestion = $twittami->settings->suggestion;
 
 	if ( !is_feed() ) {
 		if ( 'manuale' != $twittami->options->button_position and 'box' != $twittami->options->button_position )
@@ -209,7 +221,7 @@ function twittami_footer_js () {
 
 function twittami_settings_init (){
 
-	if ( !is_site_admin() )
+	if ( !is_admin() )
 		return false;
 
 	add_menu_page(
@@ -265,7 +277,14 @@ function twittami_settings() {
 				$btn1_5 = 'checked="true"';
 			break;
 		}
-
+		switch ( $twittami->settings->striscia_size ) {
+			case '1':
+				$btn2_1 = 'checked="true"';
+			break;
+			case '2':
+				$btn2_2 = 'checked="true"';
+			break;
+		}
 ?>
 <div class="wrap">
 	<div class="icon32" id="icon-options-general"><br/></div>
@@ -302,8 +321,14 @@ function twittami_settings() {
 
 					<input type='radio' name='twittami_settings[button_type]' value='5' <?php echo $btn1_5 ?>/>
 					Striscia dopo il post (consigliato)
-					<br/><br>
+					<br/>
 					<img src="http://twittami.com/e/images/striscia-demo.png"/>
+					<input type='radio' name='twittami_settings[striscia_size]' value='1' <?php echo $btn2_1 ?>/>Piccola 
+					<input type='radio' name='twittami_settings[striscia_size]' value='2' <?php echo $btn2_2 ?>/>Normale
+					<br/>
+					<input type='text' name='twittami_settings[suggestion]' value='<?php echo $twittami->settings->suggestion ?>'/><br>
+					<small>Questo è il testo da aggiungere nel box affianco al badge</small>
+					<br/>
 
 					<input type='radio' name='twittami_settings[button_position]' value='3' <?php echo $btn2_3 ?>/>
 					Posizione manuale
@@ -324,7 +349,7 @@ function twittami_settings() {
 		</table>
 
 	  <p class="submit">
-		<input type='submit' name='twittami-save' value='Save Settings' />
+		<input type='submit' name='twittami-save' value='Salva impostazioni'/>
 	</p>
 	</form>
 </div>
@@ -384,12 +409,14 @@ function twittami_button_code ( $content = false, $data = array(), $options = ar
 
 function twittami_button_box ( $content ) {
 
-	global $post;
+	global $post, $twittami;
 
 	$button = twittami_button();
 
-	$html .= '<div id="twittami_box">';
+	$html .= '<a rel="twittamibox" title="Pubblica la notizia su twitter e fai girare la voce" href="http://nicolamac.local/2009/07/30/twittami-bestof-numero-2/?n=20">twittami</a>';
+	$html .= '<div class="twittami_box' . $twittami->options->striscia_size . '">';
 	$html .= $button;
+	$html .= '<div class="suggestion">' . $twittami->options->suggestion . '</div>';
 	$html .= '</div><!-- end #twittami_box -->';
 
 	return $content . $html;
