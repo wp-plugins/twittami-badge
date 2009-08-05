@@ -116,6 +116,9 @@ div.twittami_badge_normal a, div.twittami_badge_compact a {
 	font-weight: normal !important;
 	background: transparent !important;
 }
+.twittami_count a {
+	display: none;
+}
 
 div.twittami_badge_normal {
 	display: inline !important;

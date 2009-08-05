@@ -205,10 +205,11 @@ function twittami_footer_js () {
 			var $this = $(this);
 			var uid = $this.attr('id').substring(4);
 
-			$this.load("/?vote_id=" + uid);
+			$(".twittami_count a").load("/?vote_id=" + uid);
 
 			$this.ajaxStop(function(r,s) {  
-				$(".twittami_badge .loader").fadeOut("fast");
+				$(".twittami_badge .loader").hide();
+				$(".twittami_count a").fadeIn("slow");
 			});
 		});
 	});
@@ -368,8 +369,19 @@ function twittami_button ( $content = false, $options = array() ) {
 
 	global $twittami, $post;
 
+	$options['post_id'] = $post->ID;
+
+	$link = twittami_link_generate( $options );
+
 	$button = '<div id="box-' . $post->ID . '" class="twittami_badge twittami_badge_' . $twittami->options->button_type . ' ' . $twittami->options->button_align . '">';
 	$button .= '<img src="' . WP_PLUGIN_URL . '/twittami-badge/images/ajax-loader.gif' . '" class="loader"/>';
+	$button .= '<div class="twittami_count">';
+	$button .= '<a href="' . $link . '" title="' . __( 'Pubblica la notizia su twitter e fai girare la voce', 'twittami' ) . '" rel="twittamibox"></a>';
+	$button .=  '</div><!-- end .twittami_count -->';
+	$button .= '<div class="twittami_button">';
+	$button .= '<a href="' . $link . '" title="' . __( 'Pubblica la notizia su twitter e fai girare la voce', 'twittami' ) . '" rel="twittamibox">twittami</a>';
+	$button .= '</div><!-- end .twittami_button -->';
+
 	$button .= '</div>';
 
 	if ( 'alto' == $twittami->options->button_position )
@@ -386,8 +398,6 @@ function twittami_button_code ( $content = false, $data = array(), $options = ar
 
 	$data = array_merge( $data, $options );
 
-	$link = twittami_link_generate( $data );
-
 	if ( !function_exists( 'twittami_hook_init' ) )
 		$vote = twittami_query( 'twittami.getCount', array( 'id', array( (int)$data['post_id'], get_bloginfo('url') ) ) );
 	else
@@ -396,15 +406,7 @@ function twittami_button_code ( $content = false, $data = array(), $options = ar
 	if ( $vote === false )
 		$vote = '?';
 
-	$button .= '<div class="twittami_count">';
-	$button .= '<a href="' . $link . '" title="' . __( 'Pubblica la notizia su twitter e fai girare la voce', 'twittami' ) . '" rel="twittamibox">' . $vote . '</a>';
-	$button .=  '</div><!-- end .twittami_count -->';
-	$button .= '<div class="twittami_button">';
-	$button .= '<a href="' . $link . '" title="' . __( 'Pubblica la notizia su twitter e fai girare la voce', 'twittami' ) . '" rel="twittamibox">twittami</a>';
-	$button .= '</div><!-- end .twittami_button -->';
-
-	$content = $button . $content ;
-	return $content;
+	return $vote;
 }
 
 function twittami_button_box ( $content ) {
@@ -413,7 +415,7 @@ function twittami_button_box ( $content ) {
 
 	$button = twittami_button();
 
-	$html .= '<a rel="twittamibox" title="Pubblica la notizia su twitter e fai girare la voce" href="http://nicolamac.local/2009/07/30/twittami-bestof-numero-2/?n=20">twittami</a>';
+	// $html .= '<a rel="twittamibox" title="Pubblica la notizia su twitter e fai girare la voce" href="http://nicolamac.local/2009/07/30/twittami-bestof-numero-2/?n=20">twittami</a>';
 	$html .= '<div class="twittami_box' . $twittami->options->striscia_size . '">';
 	$html .= $button;
 	$html .= '<div class="suggestion">' . $twittami->options->suggestion . '</div>';
