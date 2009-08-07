@@ -297,47 +297,63 @@ function twittami_settings() {
 	<form action='' method='post' id='twittami'>
 
 		<table cellspacing="20" width="80%">
+			<h3>Seleziona un badge</h3>
 			<tr>
-				<td valign="top">Scegli un badge</td>
+				<td valign="top">Badge normale</td>
 				<td>
 					<input type='radio' name='twittami_settings[button_type]' value='1' <?php echo $btn1_1 ?>/>
 					Badge in alto a destra (standard)
 					<br/><br>
-					<img src="http://twittami.com/e/images/badge_nd-demo.png"/>
-
+					<img src="<?php echo WP_PLUGIN_URL ?>/twittami-badge/images/badge_nd-demo.gif"/>
+				</td>
+				<td>
 					<input type='radio' name='twittami_settings[button_type]' value='2' <?php echo $btn1_2 ?>/>
 					Badge in alto a sinistra
 					<br/><br>
-					<img src="http://twittami.com/e/images/badge_ns-demo.png"/>
-
+					<img src="<?php echo WP_PLUGIN_URL ?>/twittami-badge/images/badge_ns-demo.gif"/>
+				</td>
+			</tr>
+			<tr>
+				<td valign="top">Badge compatto</td>
+				<td>
 					<input type='radio' name='twittami_settings[button_type]' value='3' <?php echo $btn1_3 ?>/>
 					Compatto in basso a destra
 					<br/><br>
-					<img src="http://twittami.com/e/images/compact_bd-demo.png"/>
-
+					<img src="<?php echo WP_PLUGIN_URL ?>/twittami-badge/images/compact_bd-demo.gif"/>
+				</td>
+				<td>
 					<input type='radio' name='twittami_settings[button_type]' value='4' <?php echo $btn1_4 ?>/>
 					Compatto in basso a sinistra
 					<br/><br>
-					<img src="http://twittami.com/e/images/compact_bs-demo.png"/>
+					<img src="<?php echo WP_PLUGIN_URL ?>/twittami-badge/images/compact_bs-demo.gif"/>
+					</td>
+				</tr>
+				<tr>
+					<td valign="top">Badge a box</td>
+					<td>
+						<input type='radio' name='twittami_settings[button_type]' value='5' <?php echo $btn1_5 ?>/>
+						Striscia dopo il post (<b>consigliato</b>)
+						<br/><br/>
+						<img src="<?php echo WP_PLUGIN_URL ?>/twittami-badge/images/striscia-demo.gif"/>
+					</td>
+					<td>
+						<input type='radio' name='twittami_settings[striscia_size]' value='1' <?php echo $btn2_1 ?>/>Piccola 
+						<input type='radio' name='twittami_settings[striscia_size]' value='2' <?php echo $btn2_2 ?>/>Normale
+						<br/>
+						<input type='text' name='twittami_settings[suggestion]' value='<?php echo $twittami->settings->suggestion ?>'/><br>
+						<small>Questo è il testo da aggiungere nel box affianco al badge</small>
+						<br/>
 
-					<input type='radio' name='twittami_settings[button_type]' value='5' <?php echo $btn1_5 ?>/>
-					Striscia dopo il post (consigliato)
-					<br/>
-					<img src="http://twittami.com/e/images/striscia-demo.png"/>
-					<input type='radio' name='twittami_settings[striscia_size]' value='1' <?php echo $btn2_1 ?>/>Piccola 
-					<input type='radio' name='twittami_settings[striscia_size]' value='2' <?php echo $btn2_2 ?>/>Normale
-					<br/>
-					<input type='text' name='twittami_settings[suggestion]' value='<?php echo $twittami->settings->suggestion ?>'/><br>
-					<small>Questo è il testo da aggiungere nel box affianco al badge</small>
-					<br/>
-
-					<input type='radio' name='twittami_settings[button_position]' value='3' <?php echo $btn2_3 ?>/>
-					Posizione manuale
-					<br/><br/>
-					<small>L'ultima voce &egrave; per i pi&ugrave; esperti, basta posizionare <code><?php echo htmlentities( '<?php echo twittami_button() ?>' ) ?></code> dove vuoi aggiungere il badge, se vuoi aggiungere il box a fine post, usa <code><?php echo htmlentities( '<?php echo twittami_button_box() ?>' ) ?></code></small>
+						<input type='radio' name='twittami_settings[button_position]' value='3' <?php echo $btn2_3 ?>/>
+						Posizione manuale
+						<br/><br/>
+						<small>L'ultima voce &egrave; per i pi&ugrave; esperti, basta posizionare <code><?php echo htmlentities( '<?php echo twittami_button() ?>' ) ?></code> dove vuoi aggiungere il badge, se vuoi aggiungere il box a fine post, usa <code><?php echo htmlentities( '<?php echo twittami_button_box() ?>' ) ?></code></small>
 
 				</td>
 			</tr>
+		</table>
+		<table cellspacing="20" width="80%">
+			<h3>Impostazioni del retweet</h3>
 			<tr>
 				<td width="20%" valign="top">Preview del tweet</td>
 				<td>
@@ -393,7 +409,6 @@ function twittami_button ( $content = false, $options = array() ) {
 }
 
 function twittami_button_code ( $content = false, $data = array(), $options = array() ) {
-
 	global $twittami;
 
 	$data = array_merge( $data, $options );
@@ -422,7 +437,6 @@ function twittami_button_box ( $content ) {
 	$html .= '</div><!-- end #twittami_box -->';
 
 	return $content . $html;
-
 }
 
 function twittami_button_iframe ( $content ) {
@@ -544,7 +558,11 @@ function twittami_query ( $method, $args = array(), $debug = false, $type = "wp_
 
 	} elseif ( 'wp_http' == $type ) {
 
-		$twittami->cache->post_{$args[1][0]} = wp_cache_get( 'post_' . $args[1][0], $twittami->cache->post_{$args[1][0]}, 'twittami' );
+		$twittami->cache->post_{$args[1][0]} = wp_cache_get(
+			'post_' . $args[1][0],
+			$twittami->cache->post_{$args[1][0]},
+			'twittami'
+		);
 		if ( false === $twittami->cache->post_{$args[1][0]} ) {
 
 			$http_url = $twittami->site . "/twit.php?t=count";
@@ -561,13 +579,11 @@ function twittami_query ( $method, $args = array(), $debug = false, $type = "wp_
 				$return = $return['body'];
 				$twittami->cache->post_{$args[1][0]} = $return;
 				wp_cache_set( 'post_' . $args[1][0], $twittami->cache->post_{$args[1][0]}, 'twittami' );
-			} else {
+			} else
 				return '?';
-			}
-
 		}
-		return $twittami->cache->post_{$args[1][0]};
 
+		return $twittami->cache->post_{$args[1][0]};
 	}
 
 }
