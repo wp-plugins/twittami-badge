@@ -5,7 +5,7 @@ Author: Nicola Greco
 Author URI: http://nicolagreco.com/
 Plugin URI: http://twittami.com/badge
 Description: Aggiunge gli strumenti Twittami.com
-Version: 0.4
+Version: 0.5
 */
 
 /*
