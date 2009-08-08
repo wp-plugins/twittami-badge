@@ -16,7 +16,7 @@ Aggiunge il badge di Twittami.com sul tuo blog
 
 Come installare il badge
 
-1. Caricare `twittami_button` in `/wp-content/plugins/`
+1. Caricare `twittami-badge` in `/wp-content/plugins/`
 2. Attivare il plugin dalla voce 'Plugins' nel menu di WordPress
 
 == Frequently Asked Questions ==
