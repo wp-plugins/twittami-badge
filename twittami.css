@@ -106,7 +106,6 @@
 
 /* Twittami Button - Normal */
 div.twittami_badge_normal, div.twittami_badge_compact {
-	display: inline !important;
 	text-decoration: none !important;
 	text-transform: none !important;
 	font-family: "Lucida Grande", Helvetica !important;
@@ -117,8 +116,12 @@ div.twittami_badge_normal a, div.twittami_badge_compact a {
 	font-weight: normal !important;
 	background: transparent !important;
 }
+.twittami_count a {
+	display: none;
+}
 
 div.twittami_badge_normal {
+	display: inline !important;
 	background: transparent url(images/badge_normal.png) no-repeat scroll 0 0 !important;
 	height: 53px !important;
 	width: 46px !important;
@@ -203,12 +206,31 @@ div.twittami_badge_compact {
 	}
 		div.twittami_badge_compact div.twittami_button a {
 		}
-div#twittami_box {
+div.twittami_box {
 	background:transparent url(images/setipiace.png) no-repeat scroll 66px 0 !important;
 	display:block !important;
 	height:75px !important;
 	overflow:hidden !important;
 }
-	div#twittami_box div.twittami_badge_normal {
+	div.twittami_box div.twittami_badge_normal {
 		margin: 10px !important;
+	}
+.twittami_box div.suggestion {
+	color:#007292;
+	font-family:Arial;
+	font-size:24px;
+	margin-left:109px !important;
+	padding-top:25px;
+}
+div.twittami_box.tiny {
+	background:transparent url(images/setipiace_fit.png) no-repeat scroll 55px 0 !important;
+	height: 60px !important;
+}
+	div.twittami_box.tiny div.twittami_badge_normal {
+		margin: 0 !important;
+	}
+	.twittami_box.tiny div.suggestion {
+		font-size:17px;
+		margin-left:90px !important;
+		padding-top:12px;
 	}

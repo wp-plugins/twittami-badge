@@ -29,7 +29,9 @@ The complete license is in this folder, in the file called license.txt
 
 */
 
-/* Actions */
+add_action( 'init', 'twittami_buttons_init' );
+add_action( 'init', 'twittami_button_get' );
+
 function twittami_button_get () {
 
 	global $twittami, $post;
@@ -65,20 +67,19 @@ function twittami_button_get () {
 	}
 }
 
-add_action( 'init', 'twittami_buttons_init' );
-add_action( 'init', 'twittami_button_get' );
-
 function twittami_buttons_init () {
 
 	global $twittami;
 
-	$twittami->site = 'http://twittami.com';
+	wp_enqueue_script('jquery');
 
+	$twittami->site = 'http://twittami.com';
 	$default = array(
-		'button_position' => '2',
-		'button_type' => '1',
+		'button_position' => '1',
 		'at' => 'retwittami',
-		'request' => 'ajax'
+		'request' => 'ajax',
+		'suggestion'=> 'Se ti &egrave; piaciuto, retwittami!',
+		'striscia_size' => '2'
 	);
 
 	$get_twittami = get_option( 'twittami_settings' );
@@ -88,34 +89,83 @@ function twittami_buttons_init () {
 	else
 		add_option( 'twittami_settings', $default );
 
-	if ( '1' == $twittami->settings->button_type )
-		$twittami->options->button_type = 'normal';
-	elseif ( '2' == $twittami->settings->button_type )
-		$twittami->options->button_type = 'compact';
+	switch ( $twittami->settings->button_type ) {
+		case '1':
+			$twittami->options->button_type = 'normal';
+		break;
+		case '2':
+			$twittami->options->button_type = 'normal';
+		break;
+		case '3':
+			$twittami->options->button_type = 'compact';
+		break;
+		case '4':
+			$twittami->options->button_type = 'compact';
+		break;
+		case '5':
+			$twittami->options->button_type = 'normal';
+		break;
+	}
 
-	if ( '1' == $twittami->settings->button_position )
-		$twittami->options->button_position = 'destra';
-	elseif ( '2' == $twittami->settings->button_position )
-		$twittami->options->button_position = 'sinistra';
-	elseif ( '3' == $twittami->settings->button_position )
-		$twittami->options->button_position = 'manuale';
-	elseif ( '4' == $twittami->settings->button_position )
-		$twittami->options->button_position = 'basso';
+	switch ( $twittami->settings->button_type ) {
+		case '1':
+			$twittami->options->button_align = 'destra';
+			break;
+		case '2':
+			$twittami->options->button_align = 'sinistra';
+			break;
+		case '3':
+			$twittami->options->button_align = 'destra';
+			break;
+		case '4':
+			$twittami->options->button_align = 'sinistra';
+			break;
+		case '5':
+			$twittami->options->button_align = 'sinistra';
+			break;
+		case '6':
+			$twittami->options->button_align = 'manuale';
+			break;
+	}
+
+	switch ( $twittami->settings->button_type ) {
+		case '1':
+			$twittami->options->button_position = 'alto';
+			break;
+		case '2':
+			$twittami->options->button_position = 'alto';
+			break;
+		case '3':
+			$twittami->options->button_position = 'basso';
+			break;
+		case '4':
+			$twittami->options->button_position = 'basso';
+			break;
+		case '5':
+			$twittami->options->button_position = 'box';
+			break;
+		case '6':
+			$twittami->options->button_position = 'manuale';
+			break;
+	}
+
+	switch ( $twittami->settings->striscia_size ) {
+		case '1':
+			$twittami->options->striscia_size = ' tiny';
+			break;
+		case '2':
+			$twittami->options->striscia_size = '';
+			break;
+	}
 
 	$twittami->options->at = $twittami->settings->at;
-
-	if ( 'ajax' == $twittami->settings->request )
-		$twittami->options->request = 'destra';
-	elseif ( 'popup' == $twittami->settings->request )
-		$twittami->options->request = 'sinistra';
-
-	wp_enqueue_script('jquery');
+	$twittami->options->suggestion = $twittami->settings->suggestion;
 
 	if ( !is_feed() ) {
-		if ( 'manuale' != $twittami->options->button_position and 'basso' != $twittami->options->button_position )
+		if ( 'manuale' != $twittami->options->button_position and 'box' != $twittami->options->button_position )
 			add_filter('the_content', 'twittami_button' );
-		elseif ( 'basso' == $twittami->options->button_position )
-			add_filter('the_content', 'twittami_button_bottom' );
+		elseif ( 'box' == $twittami->options->button_position )
+			add_filter('the_content', 'twittami_button_box' );
 	}
 
 	add_action( 'admin_menu', 'twittami_settings_init' );
@@ -155,10 +205,11 @@ function twittami_footer_js () {
 			var $this = $(this);
 			var uid = $this.attr('id').substring(4);
 
-			$this.load("/?vote_id=" + uid);
+			$(".twittami_count a").load("/?vote_id=" + uid);
 
 			$this.ajaxStop(function(r,s) {  
-				$(".twittami_badge .loader").fadeOut("fast");
+				$(".twittami_badge .loader").hide();
+				$(".twittami_count a").fadeIn("slow");
 			});
 		});
 	});
@@ -171,7 +222,7 @@ function twittami_footer_js () {
 
 function twittami_settings_init (){
 
-	if ( !is_site_admin() )
+	if ( !is_admin() )
 		return false;
 
 	add_menu_page(
@@ -210,83 +261,115 @@ function twittami_settings() {
 			foreach ( $get_twittami as $key => $value )
 				$twittami->settings->{$key} = $value;
 
-		if ( '1' == $twittami->settings->button_type )
-			$btn1_1 = 'checked="true"';
-		else
-			$btn1_2 = 'checked="true"';
-
-		if ( '1' == $twittami->settings->button_position )
-			$btn2_1 = 'checked="true"';
-		elseif ( '2' == $twittami->settings->button_position )
-			$btn2_2 = 'checked="true"';
-		elseif ( '3' == $twittami->settings->button_position )
-			$btn2_3 = 'checked="true"';
-		elseif ( '4' == $twittami->settings->button_position )
-			$btn2_4 = 'checked="true"';
-
-		if ( 'ajax' == $twittami->settings->request )
-			$btn3_1 = 'checked="true"';
-		else
-			$btn3_2 = 'checked="true"';
-
+		switch ( $twittami->settings->button_type ) {
+			case '1':
+				$btn1_1 = 'checked="true"';
+			break;
+			case '2':
+				$btn1_2 = 'checked="true"';
+			break;
+			case '3':
+				$btn1_3 = 'checked="true"';
+			break;
+			case '4':
+				$btn1_4 = 'checked="true"';
+			break;
+			case '5':
+				$btn1_5 = 'checked="true"';
+			break;
+		}
+		switch ( $twittami->settings->striscia_size ) {
+			case '1':
+				$btn2_1 = 'checked="true"';
+			break;
+			case '2':
+				$btn2_2 = 'checked="true"';
+			break;
+		}
 ?>
-
-	<h3>Configurazione Twittami</h3>
+<div class="wrap">
+	<div class="icon32" id="icon-options-general"><br/></div>
+	<script>
+	jQuery(document).ready(function($) {
+	});
+	</script>
+	<h2>Configurazione Twittami</h2>
 	<form action='' method='post' id='twittami'>
-	<table cellspacing="20" width="70%">
-		<tr>
-			<td valign="top">Scegli un badge</td>
-			<td>
-				<input type='radio' name='twittami_settings[button_type]' value='1' <?php echo $btn1_1 ?>/> <img src="http://twittami.com/e/images/badge_normal_demo.png" /><br/><br/>
-				<input type='radio' name='twittami_settings[button_type]' value='2' <?php echo $btn1_2 ?>/> <img src="http://twittami.com/e/images/badge_compact_demo.png" />
-		  </td>
-		</tr>
-		<tr>
-			<td valign="top">Posizione del badge</td>
-			<td>
-				<input type='radio' name='twittami_settings[button_position]' value='1' <?php echo $btn2_1 ?>/> In alto a destra del post<br/><br/>
-				<input type='radio' name='twittami_settings[button_position]' value='2' <?php echo $btn2_2 ?>/> In alto a sinistra del post<br/><br/>
-				<input type='radio' name='twittami_settings[button_position]' value='4' <?php echo $btn2_4 ?>/> In fondo al post (consigliato)<br/><br/>
-				<input type='radio' name='twittami_settings[button_position]' value='3' <?php echo $btn2_3 ?>/> Posizione manuale<br/><br/>
-				<small>L'ultima voce &egrave; per i pi&ugrave; esperti, basta posizionare <code><?php echo htmlentities( '<?php echo twittami_button() ?>' ) ?></code> dove vuoi aggiungere il badge</small>
-		  </td>
-		</tr>
-		<tr>
-			<td width="20%" valign="top">Composizione del Twit</td>
-			<td>
-				<p style="border-top-width:1px; font-family:Georgia,serif; font-size:1em; font-style:italic;">
-					RT @<input type='text' name='twittami_settings[at]' value='<?php echo $twittami->settings->at ?>' size="15" style="display:inline; margin-bottom:10px; margin-left:5px;margin-right:5px; margin-top:0" />: Il mio post su Twittami su <?php echo get_bloginfo('url') ?>
-				</p>
-				<small>Default: <code>retwittami</code></small>
-		  </td>
-		</tr>
-		<tr>
-			<td valign="top">Tipo di richiesta</td>
-			<td>
-				<input type='radio' name='twittami_settings[request]' value='ajax' <?php echo $btn3_1 ?>/> Ajax
-				<small>| Migliore integrazione con la grafica del blog con eleganti effetti ajax</small><br/><br/>
-				<input type='radio' name='twittami_settings[request]' value='popup' <?php echo $btn3_2 ?>/> Pop-up
-				<small>| Maggiore livello di sicurezza e supporto ai browser un po vecchiotti</small>
-		  </td>
-		</tr>
-		<tr>
-			<td valign="top">Statistiche</td>
-			<td>
-				<p>Verr&agrave; aggiunto con la prossima versione</p>
-			</td>
-		</tr>
-		<tr>
-			<td valign="top">Twittami Blog Widget</td>
-			<td>
-				<p>Verr&agrave; aggiunto con la prossima versione</p>
-			</td>
-		</tr>
-	  </table>
+
+		<table cellspacing="20" width="80%">
+			<h3>Seleziona un badge</h3>
+			<tr>
+				<td valign="top">Badge normale</td>
+				<td>
+					<input type='radio' name='twittami_settings[button_type]' value='1' <?php echo $btn1_1 ?>/>
+					Badge in alto a destra (standard)
+					<br/><br>
+					<img src="<?php echo WP_PLUGIN_URL ?>/twittami-badge/images/badge_nd-demo.gif"/>
+				</td>
+				<td>
+					<input type='radio' name='twittami_settings[button_type]' value='2' <?php echo $btn1_2 ?>/>
+					Badge in alto a sinistra
+					<br/><br>
+					<img src="<?php echo WP_PLUGIN_URL ?>/twittami-badge/images/badge_ns-demo.gif"/>
+				</td>
+			</tr>
+			<tr>
+				<td valign="top">Badge compatto</td>
+				<td>
+					<input type='radio' name='twittami_settings[button_type]' value='3' <?php echo $btn1_3 ?>/>
+					Compatto in basso a destra
+					<br/><br>
+					<img src="<?php echo WP_PLUGIN_URL ?>/twittami-badge/images/compact_bd-demo.gif"/>
+				</td>
+				<td>
+					<input type='radio' name='twittami_settings[button_type]' value='4' <?php echo $btn1_4 ?>/>
+					Compatto in basso a sinistra
+					<br/><br>
+					<img src="<?php echo WP_PLUGIN_URL ?>/twittami-badge/images/compact_bs-demo.gif"/>
+					</td>
+				</tr>
+				<tr>
+					<td valign="top">Badge a box</td>
+					<td>
+						<input type='radio' name='twittami_settings[button_type]' value='5' <?php echo $btn1_5 ?>/>
+						Striscia dopo il post (<b>consigliato</b>)
+						<br/><br/>
+						<img src="<?php echo WP_PLUGIN_URL ?>/twittami-badge/images/striscia-demo.gif"/>
+					</td>
+					<td>
+						<input type='radio' name='twittami_settings[striscia_size]' value='1' <?php echo $btn2_1 ?>/>Piccola 
+						<input type='radio' name='twittami_settings[striscia_size]' value='2' <?php echo $btn2_2 ?>/>Normale
+						<br/>
+						<input type='text' name='twittami_settings[suggestion]' value='<?php echo $twittami->settings->suggestion ?>'/><br>
+						<small>Questo è il testo da aggiungere nel box affianco al badge</small>
+						<br/>
+
+						<input type='radio' name='twittami_settings[button_position]' value='3' <?php echo $btn2_3 ?>/>
+						Posizione manuale
+						<br/><br/>
+						<small>L'ultima voce &egrave; per i pi&ugrave; esperti, basta posizionare <code><?php echo htmlentities( '<?php echo twittami_button() ?>' ) ?></code> dove vuoi aggiungere il badge, se vuoi aggiungere il box a fine post, usa <code><?php echo htmlentities( '<?php echo twittami_button_box() ?>' ) ?></code></small>
+
+				</td>
+			</tr>
+		</table>
+		<table cellspacing="20" width="80%">
+			<h3>Impostazioni del retweet</h3>
+			<tr>
+				<td width="20%" valign="top">Preview del tweet</td>
+				<td>
+					<p style="border-top-width:1px; font-family:Georgia,serif; font-size:1em; font-style:italic;">
+						RT @<b><input type='text' name='twittami_settings[at]' value='<?php echo $twittami->settings->at ?>' size="15" style="display:inline; margin-bottom:10px; margin-left:5px;margin-right:5px; margin-top:0" /></b>: Il mio post su Twittami <?php echo get_bloginfo('url') ?>
+					</p>
+			  </td>
+
+			</tr>
+		</table>
+
 	  <p class="submit">
-		<input type='submit' name='twittami-save' value='Save Settings' />
+		<input type='submit' name='twittami-save' value='Salva impostazioni'/>
 	</p>
 	</form>
-
+</div>
 <?php
 
 }
@@ -302,21 +385,33 @@ function twittami_button ( $content = false, $options = array() ) {
 
 	global $twittami, $post;
 
-	$button = '<div id="box-' . $post->ID . '" class="twittami_badge twittami_badge_' . $twittami->options->button_type . ' ' . $twittami->options->button_position . '">';
+	$options['post_id'] = $post->ID;
+
+	$link = twittami_link_generate( $options );
+
+	$button = '<div id="box-' . $post->ID . '" class="twittami_badge twittami_badge_' . $twittami->options->button_type . ' ' . $twittami->options->button_align . '">';
 	$button .= '<img src="' . WP_PLUGIN_URL . '/twittami-badge/images/ajax-loader.gif' . '" class="loader"/>';
+	$button .= '<div class="twittami_count">';
+	$button .= '<a href="' . $link . '" title="' . __( 'Pubblica la notizia su twitter e fai girare la voce', 'twittami' ) . '" rel="twittamibox"></a>';
+	$button .=  '</div><!-- end .twittami_count -->';
+	$button .= '<div class="twittami_button">';
+	$button .= '<a href="' . $link . '" title="' . __( 'Pubblica la notizia su twitter e fai girare la voce', 'twittami' ) . '" rel="twittamibox">twittami</a>';
+	$button .= '</div><!-- end .twittami_button -->';
+
 	$button .= '</div>';
 
-	$content = $button . $content ;
+	if ( 'alto' == $twittami->options->button_position )
+		$content = $button . $content;
+	elseif ( 'basso' )
+		$content = $content . $button;
+
 	return $content;
 }
 
 function twittami_button_code ( $content = false, $data = array(), $options = array() ) {
-
 	global $twittami;
 
 	$data = array_merge( $data, $options );
-
-	$link = twittami_link_generate( $data );
 
 	if ( !function_exists( 'twittami_hook_init' ) )
 		$vote = twittami_query( 'twittami.getCount', array( 'id', array( (int)$data['post_id'], get_bloginfo('url') ) ) );
@@ -326,29 +421,22 @@ function twittami_button_code ( $content = false, $data = array(), $options = ar
 	if ( $vote === false )
 		$vote = '?';
 
-	$button .= '<div class="twittami_count">';
-	$button .= '<a href="' . $link . '" title="' . __( 'Pubblica la notizia su twitter e fai girare la voce', 'twittami' ) . '" rel="twittamibox">' . $vote . '</a>';
-	$button .=  '</div><!-- end .twittami_count -->';
-	$button .= '<div class="twittami_button">';
-	$button .= '<a href="' . $link . '" title="' . __( 'Pubblica la notizia su twitter e fai girare la voce', 'twittami' ) . '" rel="twittamibox">twittami</a>';
-	$button .= '</div><!-- end .twittami_button -->';
-
-	$content = $button . $content ;
-	return $content;
+	return $vote;
 }
 
-function twittami_button_bottom ( $content ) {
+function twittami_button_box ( $content ) {
 
-	global $post;
+	global $post, $twittami;
 
 	$button = twittami_button();
 
-	$html .= '<div id="twittami_box">';
+	// $html .= '<a rel="twittamibox" title="Pubblica la notizia su twitter e fai girare la voce" href="http://nicolamac.local/2009/07/30/twittami-bestof-numero-2/?n=20">twittami</a>';
+	$html .= '<div class="twittami_box' . $twittami->options->striscia_size . '">';
 	$html .= $button;
+	$html .= '<div class="suggestion">' . $twittami->options->suggestion . '</div>';
 	$html .= '</div><!-- end #twittami_box -->';
 
 	return $content . $html;
-
 }
 
 function twittami_button_iframe ( $content ) {
@@ -470,7 +558,11 @@ function twittami_query ( $method, $args = array(), $debug = false, $type = "wp_
 
 	} elseif ( 'wp_http' == $type ) {
 
-		$twittami->cache->post_{$args[1][0]} = wp_cache_get( 'post_' . $args[1][0], $twittami->cache->post_{$args[1][0]}, 'twittami' );
+		$twittami->cache->post_{$args[1][0]} = wp_cache_get(
+			'post_' . $args[1][0],
+			$twittami->cache->post_{$args[1][0]},
+			'twittami'
+		);
 		if ( false === $twittami->cache->post_{$args[1][0]} ) {
 
 			$http_url = $twittami->site . "/twit.php?t=count";
@@ -487,13 +579,11 @@ function twittami_query ( $method, $args = array(), $debug = false, $type = "wp_
 				$return = $return['body'];
 				$twittami->cache->post_{$args[1][0]} = $return;
 				wp_cache_set( 'post_' . $args[1][0], $twittami->cache->post_{$args[1][0]}, 'twittami' );
-			} else {
+			} else
 				return '?';
-			}
-
 		}
-		return $twittami->cache->post_{$args[1][0]};
 
+		return $twittami->cache->post_{$args[1][0]};
 	}
 
 }
