@@ -5,7 +5,7 @@ Author: Nicola Greco
 Author URI: http://nicolagreco.com/
 Plugin URI: http://twittami.com/badge
 Description: Aggiunge gli strumenti Twittami.com
-Version: 0.5
+Version: 0.4
 */
 
 /*
@@ -75,7 +75,7 @@ function twittami_buttons_init () {
 
 	$twittami->site = 'http://twittami.com';
 	$default = array(
-		'button_position' => '1',
+		'button_type' => '1',
 		'at' => 'retwittami',
 		'request' => 'ajax',
 		'suggestion'=> 'Se ti &egrave; piaciuto, retwittami!',
